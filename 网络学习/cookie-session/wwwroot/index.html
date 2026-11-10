@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cookie / Session 学习站</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top"><div class="shell nav">
+  <a class="brand" href="/"><span class="brand-icon">CS</span>Cookie / Session</a>
+  <nav class="nav-links"><a href="/cookie">Cookie</a><a href="/session">Session</a><a href="/login.html">演示登录</a></nav>
+</div></header>
+<main class="shell">
+  <section class="hero">
+    <div><div class="eyebrow">HTTP · COOKIE &amp; SESSION</div>
+      <h1>浏览器带回编号，<br>服务器记住你。</h1>
+      <p>先观察 Cookie 如何保存与回传，再用服务器中的 Session 验证身份、保存状态。</p>
+      <div class="hero-note">打开开发者工具的 Network 与 Application / Storage 面板，一起观察。</div>
+    </div>
+    <div class="diagram"><div class="diagram-label">一个编号，连接两份状态</div>
+      <div class="diagram-row"><div class="node">浏览器<br>Cookie：随机编号</div><span class="arrow">→</span><div class="node">服务器<br>Session：用户信息</div></div>
+      <div class="diagram-code"><span>1.</span> 登录 → 创建 Session → Set-Cookie<br><span>2.</span> 新请求 → Cookie → 查询 Session<br><span>3.</span> 退出 → 撤销 Session + 删除 Cookie</div>
+    </div>
+  </section>
+  <div class="section-head"><h2>Session：把状态留在服务器</h2><p>固定演示用户，点击即可体验完整会话流程。</p></div>
+  <section class="grid">
+    <article class="card"><div class="card-top"><span class="tag">01 · LOGIN</span><h3>创建一份会话</h3></div>
+      <p>模拟用户 whb 已通过认证。服务端创建 5 分钟会话，只将随机编号放进 Cookie。</p>
+      <form action="/login" method="post"><button type="submit">一键演示登录</button></form>
+      <div class="links path-links"><a href="/login.html">试试 5 秒过期实验 →</a></div>
+      <div class="route">POST /login → 303 → GET /session</div>
+    </article>
+    <article class="card"><div class="card-top"><span class="tag">02 · STATE</span><h3>换连接，状态仍然在</h3></div>
+      <p>查看用户名、访问次数、剩余有效期。刷新后访问次数继续增加，它保存在服务端。</p>
+      <a class="button" href="/session">查看会话信息</a>
+      <div class="route">GET /session → 使用编号查表</div>
+    </article>
+    <article class="card"><div class="card-top"><span class="tag">03 · VERIFY</span><h3>访问受保护页面</h3></div>
+      <p>服务端必须找到尚未过期的 Session 才允许访问。仅设置用户名 Cookie 不够。</p>
+      <a class="button" href="/private">打开受保护页面</a>
+      <div class="route">有效会话 → 200 · 无效会话 → 401</div>
+    </article>
+    <article class="card"><div class="card-top"><span class="tag">04 · LOGOUT</span><h3>让旧凭据失效</h3></div>
+      <p>同时撤销服务端会话、删除浏览器 Cookie。即使重新发送旧编号，也不能恢复登录。</p>
+      <form action="/logout" method="post"><button type="submit" class="secondary">退出并查看状态</button></form>
+      <div class="route">POST /logout → 撤销 Session + Max-Age=0</div>
+    </article>
+  </section>
+  <div class="section-head study-note"><h2>Cookie：继续保留四个小实验</h2><p>与登录会话相互独立。</p></div>
+  <section class="grid">
+    <article class="card"><div class="card-top"><span class="tag">01 · SET</span><h3>记住一个用户名</h3></div>
+      <p>内容和属性已写在服务端：用户名 whb、主题 blue，默认保留 5 分钟。</p>
+      <form action="/cookie/set" method="post">
+        <pre>demo_user=whb
+demo_theme=blue
+Path=/ · Max-Age=300 · HttpOnly · SameSite=Lax</pre>
+        <button type="submit">设置并查看</button>
+      </form><div class="route">POST /cookie/set → 303 → GET /cookie</div>
+    </article>
+    <article class="card"><div class="card-top"><span class="tag">02 · READ</span><h3>查看浏览器带回的内容</h3></div>
+      <p>这里显示服务端从本次请求解析到的 Cookie。刷新页面，会产生一条新请求。</p>
+      <a class="button" href="/cookie">查看本次请求</a>
+      <div class="note">默认包含 HttpOnly，因此用开发者工具查看它，而不是 document.cookie。</div>
+      <div class="route">GET /cookie → 读取请求头 Cookie</div>
+    </article>
+    <article class="card"><div class="card-top"><span class="tag">03 · PATH</span><h3>只在某些路径携带</h3></div>
+      <p>设置 demo_path，限定 Path=/a/b，再对比这几个地址。它有独立的 5 分钟有效期。</p>
+      <form action="/cookie/path" method="post"><button type="submit">设置路径 Cookie</button></form>
+      <div class="links path-links"><a href="/cookie">/cookie</a><a href="/a/b">/a/b</a><a href="/a/b/inside">/a/b/inside</a><a href="/a/bc">/a/bc</a></div>
+      <div class="route">/a/bc 不属于 /a/b 的路径范围</div>
+    </article>
+    <article class="card"><div class="card-top"><span class="tag">04 · CLEAR</span><h3>让浏览器忘记它</h3></div>
+      <p>服务器发送同名、相同 Path 的 Cookie，并把 Max-Age 设为 0，删除三个演示 Cookie。</p>
+      <form action="/cookie/clear" method="post"><button type="submit" class="secondary">清除并查看</button></form>
+      <div class="route">POST /cookie/clear → Set-Cookie: ...; Max-Age=0</div>
+    </article>
+  </section>
+  <section class="card study-note"><h3>对照着看这两处</h3><p>响应的 <code>Set-Cookie</code> 告诉浏览器如何保存；后续请求的 <code>Cookie</code> 只携带名称和值，不带 Path、Max-Age 等属性。</p>
+    <p>demo_user 是可修改的演示数据，不能证明登录；cpp_session_id 仅用作查表编号。真正的用户名保存在服务端。</p>
+    <p>本章使用固定用户模拟认证，不是账号系统。Session 保存在内存，服务器重启后失效；HTTP 学习环境暂未启用 HTTPS。</p>
+    <div class="links"><a href="/login.html">打开 Session 登录实验 →</a><a href="/search?keyword=HTTP">复习原来的搜索 →</a><a href="/test?message=hello">复习原来的回显 →</a></div>
+  </section>
+</main>
+<footer class="footer"><div class="shell">基于你自己的 C++ HTTP 服务器 · 一个请求、一个响应、关闭连接</div></footer>
+</body>
+</html>

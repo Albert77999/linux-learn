@@ -1,0 +1,12 @@
+Standard I/O copy test
+======================
+
+This file is used to test stdcpy.c and syscpy.c.
+The buffer is deliberately small, so each program must copy it in pieces.
+
+你好，网络世界！
+TCP, UDP, select, signal, pipe and standard I/O.
+Numbers: 0123456789
+Symbols: !@#$%^&*()_+-=[]{};:',.<>/?
+
+If cpy.txt is identical to this file, the copy succeeded.

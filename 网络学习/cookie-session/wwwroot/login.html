@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>演示登录 | Cookie / Session</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header class="top"><div class="shell nav"><a class="brand" href="/"><span class="brand-icon">CS</span>Cookie / Session</a><a href="/session">查看 Session</a></div></header>
+<main class="shell"><div class="center-wrap"><a class="back" href="/">← 返回首页</a>
+  <section class="page-card">
+    <div class="eyebrow">POST · CREATE SESSION</div><h1>一次登录，多次认出。</h1>
+    <p>模拟用户 whb 已通过认证，无需输入账号或配置 Cookie。这里只练习会话管理，没有真实的账号密码校验。</p>
+    <form action="/login" method="post"><button class="full" type="submit">演示登录 · 5 分钟会话</button></form>
+    <div class="page-hint"><h2>想亲眼看到过期？</h2>
+      <p>创建一个仅存活 5 秒的会话。登录后稍等 6 秒，再刷新 /session 或访问 /private，服务端将拒绝访问。</p>
+      <form action="/session/login-short" method="post"><button class="full secondary" type="submit">创建 5 秒实验会话</button></form>
+    </div>
+    <p class="page-hint">重新登录会生成新编号，并撤销当前浏览器旧编号对应的会话。刷新页面不会延长有效期。</p>
+  </section>
+</div></main></body></html>
